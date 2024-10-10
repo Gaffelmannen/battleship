@@ -1,44 +1,15 @@
-#include <QApplication>
-#include <QPainter>
-
-class MyWidget : public QWidget{
-public:
-    MyWidget(){
-
-    }
-
-protected:
-    void paintEvent(QPaintEvent* event) override{
-        QPainter painter(this);
-        auto l1 = QPointF(100,100);
-        auto l2 = QPointF(500, 800);
-
-        auto w = 30; // rectangle width
-        QLineF line = QLineF(l1, l2);
-
-        QRectF rect = QRectF(0, 0, line.length(), w); // the rectangle will have the same width as the line's length
-        painter.translate(line.p1()); // set the first point of the line as the origin
-        painter.rotate(-line.angle()); // rotate the rectangle
-
-        rect.setWidth(line.length());
-        rect.setHeight(w);
-
-        painter.setPen(Qt::NoPen);
-        painter.setBrush(Qt::yellow);
-        painter.drawRect(rect);
-
-        painter.resetTransform();
-        painter.setPen(Qt::red);
-        painter.drawLine(line); // draw the line
-        painter.drawEllipse(l1, 10,10); // draw the origin
-    }
-};
+#include "gridwidget.h"
 
 int main(int argc, char *argv[])
 {
+    auto imageWidth = 900;
+    auto aspectRatio = 16.0 / 9.0;
+    auto imageHeight = int(imageWidth / aspectRatio);
+    imageHeight = (imageHeight < 1) ? 1 : imageHeight;
+
     QApplication app(argc, argv);
-    MyWidget widget;
-    widget.resize(QSize(1000,1000));
+    GridWidget widget;
+    widget.resize(QSize(imageWidth, imageHeight));
     widget.show();
     return app.exec();
 }

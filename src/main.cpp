@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
     GridWidget widget;
     widget.resize(QSize(imageWidth, imageHeight));
     widget.show();
+    
     return app.exec();
 }
 

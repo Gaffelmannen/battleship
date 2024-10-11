@@ -31,11 +31,13 @@ class GridWidget : public QWidget
             numberOfSquares = BOARD_SIZE;
             incrementFactor = 4;
             boardSize = 450;
+            init();
         };
 
     protected:
+        void init();
         void paintEvent(QPaintEvent*) override;
-        void paintGrid(int, int, GridState);
+        void paintGrid(int, int, GridState, QString, QColor);
 };
 
 #endif

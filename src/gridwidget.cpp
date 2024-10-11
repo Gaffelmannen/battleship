@@ -1,5 +1,16 @@
 #include "gridwidget.h"
 
+
+void GridWidget::init()
+{
+    this->playerBoard.setGridPositionStatus(3, 3, GridState::HIT);
+    
+    this->playerBoard.setGridPositionStatus(5, 5, GridState::SHIP);
+    this->playerBoard.setGridPositionStatus(5, 6, GridState::SHIP);
+    this->playerBoard.setGridPositionStatus(5, 7, GridState::SHIP);
+    this->playerBoard.setGridPositionStatus(5, 8, GridState::SHIP);
+}
+
 void GridWidget::paintEvent(QPaintEvent* event)
 {
     if(event == nullptr)
@@ -7,23 +18,33 @@ void GridWidget::paintEvent(QPaintEvent* event)
         return;
     }
 
-    paintGrid(10, 50, playerBoard);
-    paintGrid(500, 50, opponentBoard);
+    paintGrid(10, 50, playerBoard, "Player", Qt::blue);
+    paintGrid(500, 50, opponentBoard, "Opponent", Qt::red);
 }
 
-void GridWidget::paintGrid(int x, int y, GridState _grid)
+void GridWidget::paintGrid(int x, int y, GridState _grid, QString header, QColor color)
 {
     QPainter painter(this);
 
-    auto textColor = Qt::red;
+    auto textColor = color;
     auto gridColor = Qt::green;
     auto baseLineX = x;
     auto baseLineY = y;
     auto smallOffset = 10;
     auto bigOffset = 25;
-    auto circleSize = 20;
+    auto circleRadius = 20;
     auto circleOffset = 60;
+    auto boxOffset = 40;
+    auto boxSize = 40;
     auto grid = _grid;
+
+    /* Player */
+    QString player = header;
+    QFont font=painter.font();
+    font.setPointSize(28);
+    painter.setFont(font);
+    painter.setPen(textColor);
+    painter.drawText(QPoint(baseLineX, baseLineY), player);
 
     for (int i = 1; i < numberOfSquares + 2; i++)
     {
@@ -87,8 +108,20 @@ void GridWidget::paintGrid(int x, int y, GridState _grid)
                 painter.drawEllipse(QPointF(
                     baseLineX + circleOffset + (smallOffset * i * incrementFactor), 
                     baseLineY + circleOffset + (smallOffset * j * incrementFactor)), 
-                    circleSize, 
-                    circleSize
+                    circleRadius, 
+                    circleRadius
+                );
+            }
+
+            if(grid.getGridPositionStatus(i, j) == GridState::SHIP)
+            {
+                /* Circles - Lines */
+                painter.setBrush(Qt::gray);
+                painter.drawRect(
+                    baseLineX + boxOffset + (smallOffset * i * incrementFactor), 
+                    baseLineY + boxOffset + (smallOffset * j * incrementFactor), 
+                    boxSize, 
+                    boxSize
                 );
             }
         }

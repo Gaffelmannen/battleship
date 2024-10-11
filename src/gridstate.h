@@ -27,7 +27,7 @@ class GridState
             init();
         };
         
-        int init();
+        void init();
         State getGridPositionStatus(int, int);
         void setGridPositionStatus(int, int, State);
 };

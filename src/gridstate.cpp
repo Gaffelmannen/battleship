@@ -11,12 +11,12 @@ void GridState::setGridPositionStatus(int x, int y, State state)
     this->grid[x][y] = state;
 }
 
-int GridState::init()
+void GridState::init()
 {
     for(int i = 0; i <= this->size; i++)
     {
         vector<State> v1;
-        for(int j = 0; i <= this->size; i++)
+        for(int j = 0; j <= this->size; j++)
         {
             v1.push_back(State::FREE);
         }

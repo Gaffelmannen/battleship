@@ -1,5 +1,5 @@
 TEMPLATE = app
-TARGET = qtdemo
+TARGET = battleship
 
 HEADERS += src/*.h
 SOURCES += src/*.cpp

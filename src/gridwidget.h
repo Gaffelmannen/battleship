@@ -11,6 +11,8 @@
 
 #include "gridstate.h"
 
+#define BOARD_SIZE 10
+
 class GridWidget : public QWidget
 {
     private:
@@ -18,21 +20,22 @@ class GridWidget : public QWidget
         int incrementFactor;
         int boardSize;
 
-        GridState gs;
+        GridState playerBoard;
+        GridState opponentBoard;
 
     public:
-        GridWidget()
+        GridWidget() : 
+            playerBoard(BOARD_SIZE),
+            opponentBoard(BOARD_SIZE)
         {
-            numberOfSquares = 12;
+            numberOfSquares = BOARD_SIZE;
             incrementFactor = 4;
             boardSize = 450;
-
-            gs = GridState();
         };
 
     protected:
         void paintEvent(QPaintEvent*) override;
-        void paintGrid();
+        void paintGrid(int, int, GridState);
 };
 
 #endif

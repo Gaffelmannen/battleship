@@ -5,18 +5,31 @@
 
 using namespace std;
 
-class GridState {
-    private:
-        int size = 10;
-        vector<vector<int>> grid;
-
+class GridState 
+{
     public:
-        GridState()
-        {
-            grid = vector<vector<int>>();
+        enum State {
+            FREE,
+            SHIP,
+            HIT,
+            MISS
         };
 
-        void getGridPosition(int, int);
+    private:
+        int size;
+        vector<vector<State>> grid;
+        
+
+    public:
+        GridState(int _size) : size(_size)
+        {
+            grid = vector<vector<State>>();
+            init();
+        };
+        
+        int init();
+        State getGridPositionStatus(int, int);
+        void setGridPositionStatus(int, int, State);
 };
 
 #endif

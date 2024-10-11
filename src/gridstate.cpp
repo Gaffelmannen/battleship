@@ -2,13 +2,13 @@
 
 GridState::State GridState::getGridPositionStatus(int x, int y)
 {
-    return this->getGridPositionStatus(x, y);
+    return this->grid[x][y];
 }
 
 
 void GridState::setGridPositionStatus(int x, int y, State state)
 {
-    //this-> = state;
+    this->grid[x][y] = state;
 }
 
 int GridState::init()

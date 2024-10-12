@@ -22,29 +22,32 @@ void GridWidget::paintEvent(QPaintEvent* event)
     paintGrid(500, 50, opponentBoard, "Opponent", Qt::red);
 }
 
-void GridWidget::paintGrid(int x, int y, GridState _grid, QString header, QColor color)
+void GridWidget::paintGrid(int x, int y, GridState _grid, QString _header, QColor color)
 {
     QPainter painter(this);
 
+    auto grid = _grid;
+
     auto textColor = color;
     auto gridColor = Qt::green;
+    
     auto baseLineX = x;
     auto baseLineY = y;
+
     auto smallOffset = 10;
     auto bigOffset = 25;
     auto circleRadius = 20;
     auto circleOffset = 60;
     auto boxOffset = 40;
     auto boxSize = 40;
-    auto grid = _grid;
 
-    /* Player */
-    QString player = header;
+    /* Header */
+    QString header = _header;
     QFont font=painter.font();
     font.setPointSize(28);
     painter.setFont(font);
     painter.setPen(textColor);
-    painter.drawText(QPoint(baseLineX, baseLineY), player);
+    painter.drawText(QPoint(baseLineX, baseLineY), header);
 
     for (int i = 1; i < numberOfSquares + 2; i++)
     {

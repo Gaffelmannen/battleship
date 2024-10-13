@@ -20,5 +20,5 @@ make
 To run the program call the executable created in the "Build it" step.
 
 ```
-./qtdemo
+./battelship.app
 ```

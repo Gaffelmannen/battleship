@@ -8,6 +8,9 @@ int main(int argc, char *argv[])
     imageHeight = (imageHeight < 1) ? 1 : imageHeight;
 
     QApplication app(argc, argv);
+
+    QIcon icon(".res/icon.ico"); 
+    app.setWindowIcon(QIcon("./res/icon.png"));
     
     GridWidget widget;
     widget.resize(QSize(imageWidth, imageHeight));

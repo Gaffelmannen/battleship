@@ -1,14 +1,13 @@
 #include "gridstate.h"
 
-GridState::State GridState::getGridPositionStatus(int x, int y)
+GridState::State GridState::getGridPositionStatus(Point p)
 {
-    return this->grid[x][y];
+    return this->grid[p.x][p.y];
 }
 
-
-void GridState::setGridPositionStatus(int x, int y, State state)
+void GridState::setGridPositionStatus(Point p, State state)
 {
-    this->grid[x][y] = state;
+    this->grid[p.x][p.y] = state;
 }
 
 void GridState::init()

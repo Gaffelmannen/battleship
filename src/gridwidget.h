@@ -1,6 +1,8 @@
 #ifndef GRID_WIDGET_H
 #define GRID_WIDGET_H
 
+#define DEBUG true
+
 #include <QApplication>
 #include <QPainter>
 #include <QWidget>
@@ -9,7 +11,12 @@
 #include <QRect>
 #include <QChar>
 
+#include <random>
+#include <iostream>
+
+#include "shiptype.h"
 #include "gridstate.h"
+#include "point.h"
 
 #define BOARD_SIZE 10
 
@@ -36,7 +43,14 @@ class GridWidget : public QWidget
 
     protected:
         void init();
+        int randomize(int, int);
+        bool randomize();
+        
+        bool spawnShip(string, int);
+        bool placeOpponentShip(ShipType*);
+
         void paintEvent(QPaintEvent*) override;
+        void paintBackground();
         void paintGrid(int, int, GridState, QString, QColor);
 };
 

@@ -1,14 +1,90 @@
 #include "gridwidget.h"
 
-
 void GridWidget::init()
 {
-    this->playerBoard.setGridPositionStatus(3, 3, GridState::HIT);
-    
-    this->playerBoard.setGridPositionStatus(5, 5, GridState::SHIP);
-    this->playerBoard.setGridPositionStatus(5, 6, GridState::SHIP);
-    this->playerBoard.setGridPositionStatus(5, 7, GridState::SHIP);
-    this->playerBoard.setGridPositionStatus(5, 8, GridState::SHIP);
+    spawnShip("Carrier", 5);
+    spawnShip("Battleship", 4);
+    spawnShip("Cruiser", 3);
+    spawnShip("Submarine", 3);
+    spawnShip("Destroyer", 2);
+}
+
+int GridWidget::randomize(int low, int high)
+{
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_real_distribution<double> dist(low, high);
+
+    return (int)dist(mt);
+}
+
+bool GridWidget::randomize()
+{
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_real_distribution<double> dist(0.0, 100.0);
+
+    auto value = dist(mt);
+    return (int)value % 2 == 0;
+}
+
+bool GridWidget::spawnShip(string type, int lengthOfShip)
+{
+    while(true)
+    {
+        bool vertical = randomize();
+        auto points = new vector<Point>();
+        
+        int maxX = numberOfSquares - lengthOfShip;
+        int maxY = numberOfSquares - lengthOfShip;
+
+        int posX = randomize(0, maxX);
+        int posY = randomize(0, maxY);
+        
+        for(int i = 0; i < lengthOfShip; i++)
+        {
+            if(vertical)
+            {
+                points->push_back(Point(posX, posY++));
+            }
+            else
+            {
+                points->push_back(Point(posX++, posY));
+            }
+            
+            if(DEBUG)
+                cout << "X:     " << posX << "      Y:      " << posY << endl;
+        }
+        
+        ShipType* ship = new ShipType
+        (
+            type, 
+            points
+        );
+
+        if(placeOpponentShip(ship))
+            return true;
+    }
+
+    return true;
+}
+
+bool GridWidget::placeOpponentShip(ShipType* ship)
+{
+    for (auto point : *ship->getLocation())
+    {
+        if(this->opponentBoard.getGridPositionStatus(point) != GridState::FREE)
+        {
+            return false;
+        }
+    }
+
+    for (auto point : *ship->getLocation())
+    {
+        this->opponentBoard.setGridPositionStatus(point, GridState::SHIP);
+    }
+
+    return true;
 }
 
 void GridWidget::paintEvent(QPaintEvent* event)
@@ -18,8 +94,22 @@ void GridWidget::paintEvent(QPaintEvent* event)
         return;
     }
 
-    paintGrid(10, 50, playerBoard, "Player", Qt::blue);
-    paintGrid(500, 50, opponentBoard, "Opponent", Qt::red);
+    paintBackground();
+    paintGrid(20, 50, playerBoard, "Player", Qt::blue);
+    paintGrid(510, 50, opponentBoard, "Opponent", Qt::red);
+}
+
+void GridWidget::paintBackground()
+{
+    QPainter painter(this);
+    painter.setPen(Qt::darkGray);
+    painter.setBrush(Qt::black);
+    painter.drawRect(
+        10,
+        10,
+        1000,
+        550
+    );
 }
 
 void GridWidget::paintGrid(int x, int y, GridState _grid, QString _header, QColor color)
@@ -67,7 +157,7 @@ void GridWidget::paintGrid(int x, int y, GridState _grid, QString _header, QColo
 
         /* Horisontal - Lines */
         auto l1_horistontal = QPointF(baseLineX, baseLineY + smallOffset * (i*incrementFactor));
-        auto l2_horistontal = QPointF(baseLineX + boardSize, baseLineY + smallOffset * (i*incrementFactor));
+        auto l2_horistontal = QPointF(baseLineX + boardSize - smallOffset, baseLineY + smallOffset * (i*incrementFactor));
         QLineF horisontal_line = QLineF(l1_horistontal, l2_horistontal);
         painter.translate(horisontal_line.p1());
         painter.resetTransform();
@@ -92,7 +182,7 @@ void GridWidget::paintGrid(int x, int y, GridState _grid, QString _header, QColo
 
         /* Vertical - Lines */
         auto l1_vertical = QPointF(baseLineX + smallOffset * (i*incrementFactor), baseLineY + smallOffset);
-        auto l2_vertical = QPointF(baseLineX + smallOffset * (i*incrementFactor), baseLineY + boardSize);
+        auto l2_vertical = QPointF(baseLineX + smallOffset * (i*incrementFactor), baseLineY + boardSize - smallOffset);
         QLineF vertical_line = QLineF(l1_vertical, l2_vertical);
         painter.translate(vertical_line.p1());
         painter.resetTransform();
@@ -104,7 +194,7 @@ void GridWidget::paintGrid(int x, int y, GridState _grid, QString _header, QColo
     {
         for(int j = 0; j < 10; j++)
         {
-            if(grid.getGridPositionStatus(i, j) == GridState::HIT)
+            if(grid.getGridPositionStatus(Point(i, j)) == GridState::HIT)
             {
                 /* Circles - Lines */
                 painter.setBrush(Qt::yellow);
@@ -115,17 +205,21 @@ void GridWidget::paintGrid(int x, int y, GridState _grid, QString _header, QColo
                     circleRadius
                 );
             }
-
-            if(grid.getGridPositionStatus(i, j) == GridState::SHIP)
+            
+            if(DEBUG)
             {
-                /* Circles - Lines */
-                painter.setBrush(Qt::gray);
-                painter.drawRect(
-                    baseLineX + boxOffset + (smallOffset * i * incrementFactor), 
-                    baseLineY + boxOffset + (smallOffset * j * incrementFactor), 
-                    boxSize, 
-                    boxSize
-                );
+                if(grid.getGridPositionStatus(Point(i, j)) == GridState::SHIP)
+                {
+                    /* Ships */
+                    painter.setPen(Qt::darkGray);
+                    painter.setBrush(Qt::gray);
+                    painter.drawRect(
+                        baseLineX + boxOffset + (smallOffset * i * incrementFactor), 
+                        baseLineY + boxOffset + (smallOffset * j * incrementFactor), 
+                        boxSize, 
+                        boxSize
+                    );
+                }
             }
         }
     }

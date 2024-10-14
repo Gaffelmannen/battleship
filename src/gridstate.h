@@ -3,6 +3,9 @@
 
 #include <vector>
 
+#include "point.h"
+#include "shiptype.h"
+
 using namespace std;
 
 class GridState 
@@ -18,7 +21,7 @@ class GridState
     private:
         int size;
         vector<vector<State>> grid;
-        
+        vector<ShipType> ships;
 
     public:
         GridState(int _size) : size(_size)
@@ -28,8 +31,8 @@ class GridState
         };
         
         void init();
-        State getGridPositionStatus(int, int);
-        void setGridPositionStatus(int, int, State);
+        State getGridPositionStatus(Point);
+        void setGridPositionStatus(Point, State);
 };
 
 #endif

@@ -1,3 +1,5 @@
+moc_gridwidget.cpp
+moc_predefs.h
 Makefile
 .DS_Store
 fractals.*/

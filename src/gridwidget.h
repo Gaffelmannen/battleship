@@ -10,6 +10,9 @@
 #include <QLabel>
 #include <QRect>
 #include <QChar>
+#include <QMenuBar>
+#include <QVBoxLayout>
+#include <QMessageBox>
 
 #include <random>
 #include <iostream>
@@ -22,6 +25,8 @@
 
 class GridWidget : public QWidget
 {
+    Q_OBJECT
+
     private:
         int numberOfSquares;
         int incrementFactor;
@@ -38,20 +43,32 @@ class GridWidget : public QWidget
             numberOfSquares = BOARD_SIZE;
             incrementFactor = 4;
             boardSize = 450;
+
+            setWindowTitle(tr("Battleship"));
+            
+            createActions();
+
             init();
         };
 
     protected:
         void init();
+        void createActions();
         int randomize(int, int);
         bool randomize();
         
+        void resetShips();
         bool spawnShip(string, int);
         bool placeOpponentShip(ShipType*);
 
         void paintEvent(QPaintEvent*) override;
         void paintBackground();
         void paintGrid(int, int, GridState, QString, QColor);
+
+    private slots:
+        void about();
+        void quit();
+        void newGame();
 };
 
 #endif

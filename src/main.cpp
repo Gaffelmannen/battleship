@@ -11,11 +11,11 @@ int main(int argc, char *argv[])
 
     QIcon icon(".res/icon.ico"); 
     app.setWindowIcon(QIcon("./res/icon.png"));
-    
+
     GridWidget widget;
     widget.resize(QSize(imageWidth, imageHeight));
     widget.show();
 
-    return app.exec();
+    return  app.exec();
 }
 

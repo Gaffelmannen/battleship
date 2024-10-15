@@ -9,6 +9,54 @@ void GridWidget::init()
     spawnShip("Destroyer", 2);
 }
 
+void GridWidget::createActions()
+{
+    QVBoxLayout *boxLayout = new QVBoxLayout(this);
+
+    if(boxLayout == NULL)
+    {
+        return;
+    }
+
+    QMenu *menuGame = new QMenu("Game");
+    menuGame->addAction("New", this, SLOT(newGame()));
+    menuGame->addAction("Exi", this, SLOT(quit()));
+
+    QMenu *menuHelp = new QMenu("Information");
+    menuHelp->addAction("Abou", this, SLOT(about()));
+
+    QMenuBar *mainMenu = new QMenuBar(this);
+    mainMenu->addMenu(menuGame);
+    mainMenu->addMenu(menuHelp);
+
+    this->layout()->setMenuBar(mainMenu);
+}
+
+void GridWidget::about()
+{
+    if (DEBUG)
+        cout << "About" << endl;
+    QMessageBox::about(
+        this, 
+        tr("About Battlehip"),
+        tr( "The <b>Application</b> is an implementation of the battleship game "
+            "written as modern GUI applications using Qt and C++, "
+            "it features a CPU opponent.")
+    );
+}
+
+void GridWidget::quit()
+{
+    qApp->exit();
+}
+
+void GridWidget::newGame()
+{
+    resetShips();
+    init();
+    repaint();
+}
+
 int GridWidget::randomize(int low, int high)
 {
     std::random_device rd;
@@ -26,6 +74,17 @@ bool GridWidget::randomize()
 
     auto value = dist(mt);
     return (int)value % 2 == 0;
+}
+
+void GridWidget::resetShips()
+{
+    for(int i = 0; i < numberOfSquares; i++)
+    {
+        for(int j = 0; j < numberOfSquares; j++)
+        {
+            opponentBoard.setGridPositionStatus(Point(i, j), GridState::FREE);
+        }
+    }
 }
 
 bool GridWidget::spawnShip(string type, int lengthOfShip)

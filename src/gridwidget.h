@@ -14,6 +14,9 @@
 #include <QVBoxLayout>
 #include <QMessageBox>
 
+#include <memory>
+#include <string>
+#include <stdexcept>
 #include <random>
 #include <iostream>
 
@@ -21,7 +24,7 @@
 #include "gridstate.h"
 #include "point.h"
 
-#define BOARD_SIZE 10
+#define NUMBER_OF_GRIDS_ON_THE_BOARD 10
 
 class GridWidget : public QWidget
 {
@@ -32,15 +35,23 @@ class GridWidget : public QWidget
         int incrementFactor;
         int boardSize;
 
+        int smallOffset = 10;
+        int bigOffset = 25;
+        int circleRadius = 20;
+        int circleOffset = 60;
+        int boxOffset = 40;
+        int boxSize = 40;
+
+        vector<ShipType*> ships;
         GridState playerBoard;
         GridState opponentBoard;
 
     public:
         GridWidget() : 
-            playerBoard(BOARD_SIZE),
-            opponentBoard(BOARD_SIZE)
+            playerBoard(NUMBER_OF_GRIDS_ON_THE_BOARD),
+            opponentBoard(NUMBER_OF_GRIDS_ON_THE_BOARD)
         {
-            numberOfSquares = BOARD_SIZE;
+            numberOfSquares = NUMBER_OF_GRIDS_ON_THE_BOARD;
             incrementFactor = 4;
             boardSize = 450;
 
@@ -52,15 +63,21 @@ class GridWidget : public QWidget
         };
 
     protected:
+
+        template<typename ... Args>
+        std::string stringFormat(const std::string&, Args ... args);
+
         void init();
         void createActions();
         int randomize(int, int);
         bool randomize();
         
+        bool isShipSunk(ShipType*, GridState*);
         void resetShips();
-        bool spawnShip(string, int);
+        ShipType* spawnShip(string, int);
         bool placeOpponentShip(ShipType*);
 
+        void mousePressEvent(QMouseEvent*);
         void paintEvent(QPaintEvent*) override;
         void paintBackground();
         void paintGrid(int, int, GridState, QString, QColor);

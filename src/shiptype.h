@@ -15,6 +15,8 @@ class ShipType
         vector<Point>* points;
 
     public:
+        bool sunk;
+ 
         ShipType(string, vector<Point>*);
         string getName();
         vector<Point>* getLocation();

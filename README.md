@@ -1,5 +1,5 @@
-# QT Demo
-A very simple qt demo..
+# Battleship
+The war on the high seas in this implementation of the classic game.
 
 
 ## Build it

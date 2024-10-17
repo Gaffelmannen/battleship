@@ -3,6 +3,8 @@
 
 void GridWidget::init()
 {
+    numberOfTurnsPlayed = 0;
+
     opponentShips = vector<ShipType*>();
 
     opponentShips.push_back(spawnShip("Carrier", 5));
@@ -202,6 +204,82 @@ bool GridWidget::placeOpponentShip(ShipType* ship)
     return true;
 }
 
+void GridWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    if(event == NULL)
+        return;
+
+    const QPoint clickPoint = event->pos();
+    Point gridPoint = Point(-1, -1);
+
+    if (false)
+        cout << 
+        "Mouse over     X=" << 
+        clickPoint.x() << 
+        "    Y=" << 
+        clickPoint.y() << 
+        endl;
+
+    string board;
+    int baseLineX;
+    int baseLineY;
+
+    if(
+        clickPoint.x() >= 20 &&
+        clickPoint.x() <= 20 + boardSize &&
+        clickPoint.y() >= 50 &&
+        clickPoint.y() <= 50 + boardSize
+    )
+    {
+        board = "Player";
+        baseLineX = 20;
+        baseLineY = 50;
+    }
+
+    for(int i = 0; i < numberOfSquares; i++)
+    {
+        int gridTopX = baseLineX + (smallOffset * (i*incrementFactor));
+        int gridTopY = baseLineY + (smallOffset * (i*incrementFactor));
+
+        int gridBottomX = gridTopX + boxSize;
+        int gridBottomY = gridTopY + boxSize;
+
+        if(false)
+        {
+            cout << 
+                "topX=" << 
+                gridTopX << 
+                "     toprY=" << 
+                gridTopY << 
+                "          bottomX=" << 
+                gridBottomX <<
+                "          bottomY=" <<
+                gridBottomY <<
+                endl;
+        }
+
+        if(gridTopX <= clickPoint.x() && clickPoint.x() >= gridBottomX)
+        {
+            gridPoint.x = i;
+        }
+
+        if(gridBottomY <= clickPoint.y() && clickPoint.y() >= gridBottomY)
+        {
+            gridPoint.y = i;
+        }
+
+        if(DEBUG)
+        {
+            cout << 
+                "X=" << 
+                gridPoint.x << 
+                "     Y=" << 
+                gridPoint.y << 
+                endl;
+        }
+    }
+}
+
 void GridWidget::mousePressEvent (QMouseEvent * event)
 {
     const QPoint clickPoint = event->pos();
@@ -279,10 +357,12 @@ void GridWidget::mousePressEvent (QMouseEvent * event)
         if(opponentBoard.getGridPositionStatus(gridPoint) == GridState::SHIP)
         {
             opponentBoard.setGridPositionStatus(gridPoint, GridState::HIT);
+            numberOfTurnsPlayed++;
         }
         else if(opponentBoard.getGridPositionStatus(gridPoint) == GridState::FREE)
         {
             opponentBoard.setGridPositionStatus(gridPoint, GridState::MISS);
+            numberOfTurnsPlayed++;
         }
         else
         {
@@ -321,7 +401,7 @@ void GridWidget::mousePressEvent (QMouseEvent * event)
         QMessageBox::about(
             this, 
             tr("Won"),
-            tr(("Congratulations - you won!'"))
+            tr((stringFormat("Congratulations! You won in %d turns.", numberOfTurnsPlayed).data()))
         );
     }
     

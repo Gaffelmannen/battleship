@@ -40,6 +40,8 @@ class GridWidget : public QWidget
         int boxOffset = 40;
         int boxSize = 40;
 
+        int numberOfTurnsPlayed;
+
         vector<ShipType*> opponentShips;
         GridState playerBoard;
         GridState opponentBoard;
@@ -71,6 +73,7 @@ class GridWidget : public QWidget
         ShipType* spawnShip(string, int);
         bool placeOpponentShip(ShipType*);
 
+        void mouseMoveEvent(QMouseEvent *);
         void mousePressEvent(QMouseEvent*);
         void paintEvent(QPaintEvent*) override;
         void paintBackground();

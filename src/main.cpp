@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
     //QWidget widget;
     widget.setObjectName("GameWindow");
     widget.setStyleSheet("#GameWindow { background-image: url(res/bg.jpeg); }");
+    widget.setMouseTracking(true);
     widget.resize(s);
     widget.setMinimumSize(s);
     widget.setMaximumSize(s);

@@ -1,11 +1,17 @@
 #include "gridwidget.h"
+#include <iostream>
 
 int main(int argc, char *argv[])
 {
-    auto imageWidth = 1024;
+    auto imageWidth = 1068;
     auto aspectRatio = 16.0 / 9.0;
     auto imageHeight = int(imageWidth / aspectRatio);
     imageHeight = (imageHeight < 1) ? 1 : imageHeight;
+
+    if(DEBUG)
+    {
+        cout << "Resolution " << imageWidth << "x" << imageHeight << endl;
+    }
 
     QApplication app(argc, argv);
 
@@ -14,11 +20,14 @@ int main(int argc, char *argv[])
 
     QSize s = QSize(imageWidth, imageHeight);
     GridWidget widget;
+    //QWidget widget;
+    widget.setObjectName("GameWindow");
+    widget.setStyleSheet("#GameWindow { background-image: url(res/bg.jpeg); }");
     widget.resize(s);
     widget.setMinimumSize(s);
     widget.setMaximumSize(s);
     widget.show();
 
-    return  app.exec();
+    return app.exec();
 }
 

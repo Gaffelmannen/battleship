@@ -16,13 +16,11 @@
 
 #include <memory>
 #include <string>
-#include <stdexcept>
-#include <random>
-#include <iostream>
 
 #include "shiptype.h"
 #include "gridstate.h"
 #include "point.h"
+
 
 #define NUMBER_OF_GRIDS_ON_THE_BOARD 10
 
@@ -42,7 +40,7 @@ class GridWidget : public QWidget
         int boxOffset = 40;
         int boxSize = 40;
 
-        vector<ShipType*> ships;
+        vector<ShipType*> opponentShips;
         GridState playerBoard;
         GridState opponentBoard;
 
@@ -64,14 +62,10 @@ class GridWidget : public QWidget
 
     protected:
 
-        template<typename ... Args>
-        std::string stringFormat(const std::string&, Args ... args);
-
         void init();
         void createActions();
-        int randomize(int, int);
-        bool randomize();
         
+        bool checkForWinner();
         bool isShipSunk(ShipType*, GridState*);
         void resetShips();
         ShipType* spawnShip(string, int);

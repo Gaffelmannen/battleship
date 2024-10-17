@@ -1,30 +1,20 @@
 #include "gridwidget.h"
-
-template<typename ... Args>
-std::string GridWidget::stringFormat(const std::string& format, Args ... args)
-{
-    int size_s = std::snprintf( nullptr, 0, format.c_str(), args ...) + 1;
-    if( size_s <= 0 ){ throw std::runtime_error( "Error during formatting." ); }
-    auto size = static_cast<size_t>( size_s );
-    std::unique_ptr<char[]> buf( new char[ size ] );
-    std::snprintf( buf.get(), size, format.c_str(), args ...);
-    return std::string( buf.get(), buf.get() + size - 1 );
-}
+#include "misc.h"
 
 void GridWidget::init()
 {
-    ships = vector<ShipType*>();
+    opponentShips = vector<ShipType*>();
 
-    ships.push_back(spawnShip("Carrier", 5));
-    ships.push_back(spawnShip("Battleship", 4));
-    ships.push_back(spawnShip("Cruiser", 3));
-    ships.push_back(spawnShip("Submarine", 3));
-    ships.push_back(spawnShip("Destroyer", 2));
+    opponentShips.push_back(spawnShip("Carrier", 5));
+    opponentShips.push_back(spawnShip("Battleship", 4));
+    opponentShips.push_back(spawnShip("Cruiser", 3));
+    opponentShips.push_back(spawnShip("Submarine", 3));
+    opponentShips.push_back(spawnShip("Destroyer", 2));
 
     if(DEBUG)
     {
         cout << "Opponent ships created:" << endl;
-        for(auto ship : ships)
+        for(auto ship : opponentShips)
         {
             cout << ship->getName() << endl;
         }
@@ -86,23 +76,22 @@ void GridWidget::newGame()
     repaint();
 }
 
-int GridWidget::randomize(int low, int high)
+bool GridWidget::checkForWinner()
 {
-    std::random_device rd;
-    std::mt19937 mt(rd());
-    std::uniform_real_distribution<double> dist(low, high);
+    bool winnerFound = false;
+    int numberOfSunkenOpponenthips = 0;
 
-    return (int)dist(mt);
-}
+    for(auto ship : opponentShips)
+    {
+        if(ship->sunk)
+        {
+            numberOfSunkenOpponenthips++;
+        }
+    }
 
-bool GridWidget::randomize()
-{
-    std::random_device rd;
-    std::mt19937 mt(rd());
-    std::uniform_real_distribution<double> dist(0.0, 100.0);
+    winnerFound = opponentShips.size() == numberOfSunkenOpponenthips;
 
-    auto value = dist(mt);
-    return (int)value % 2 == 0;
+    return winnerFound;
 }
 
 bool GridWidget::isShipSunk(ShipType* ship, GridState* board)
@@ -314,7 +303,7 @@ void GridWidget::mousePressEvent (QMouseEvent * event)
         );
     }
 
-    for(auto ship : ships)
+    for(auto ship : opponentShips)
     {
         if(isShipSunk(ship, &opponentBoard) && ship->sunk == false)
         {
@@ -325,6 +314,15 @@ void GridWidget::mousePressEvent (QMouseEvent * event)
                 tr(stringFormat("Opponent - 'You sunk my %s'", ship->getName().data()).data())
             );
         }
+    }
+
+    if(checkForWinner())
+    {
+        QMessageBox::about(
+            this, 
+            tr("Won"),
+            tr(("Congratulations - you won!'"))
+        );
     }
     
     repaint();
@@ -345,6 +343,7 @@ void GridWidget::paintEvent(QPaintEvent* event)
 void GridWidget::paintBackground()
 {
     QPainter painter(this);
+    painter.setOpacity(0.9);
     painter.setPen(Qt::darkGray);
     painter.setBrush(Qt::black);
     painter.drawRect(

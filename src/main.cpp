@@ -3,7 +3,7 @@
 
 int main(int argc, char *argv[])
 {
-    auto imageWidth = 1068;
+    auto imageWidth = 1200;
     auto aspectRatio = 16.0 / 9.0;
     auto imageHeight = int(imageWidth / aspectRatio);
     imageHeight = (imageHeight < 1) ? 1 : imageHeight;

@@ -1,7 +1,7 @@
 #ifndef GRID_WIDGET_H
 #define GRID_WIDGET_H
 
-#define DEBUG true
+#define DEBUG false
 
 #include <QApplication>
 #include <QPainter>
@@ -40,9 +40,13 @@ class GridWidget : public QWidget
         int boxOffset = 40;
         int boxSize = 40;
 
+        bool gameover;
+        bool playerHasNextTurn;
         int numberOfTurnsPlayed;
 
         vector<ShipType*> opponentShips;
+        vector<ShipType*> playerShips;
+
         GridState playerBoard;
         GridState opponentBoard;
 
@@ -63,20 +67,25 @@ class GridWidget : public QWidget
         };
 
     protected:
-
         void init();
+        vector<ShipType*> addShipsToVector(bool);
         void createActions();
-        
-        bool checkForWinner();
+
+        void opponentAttack();
+        bool checkIfPlayerWon();
+        bool checkIfOpponentWon();
         bool isShipSunk(ShipType*, GridState*);
+        int howManyShipsHasTheShipTaken(ShipType*, GridState*);
         void resetShips();
-        ShipType* spawnShip(string, int);
-        bool placeOpponentShip(ShipType*);
+        ShipType* spawnShip(string, int, bool);
+        bool placePlayerShip(ShipType*);
+        bool placeShip(ShipType*, bool);
 
         void mouseMoveEvent(QMouseEvent *);
         void mousePressEvent(QMouseEvent*);
         void paintEvent(QPaintEvent*) override;
         void paintBackground();
+        void paintInfoBox();
         void paintGrid(int, int, GridState, QString, QColor);
 
     private slots:

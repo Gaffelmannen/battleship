@@ -7,7 +7,7 @@
 #include <iostream>
 
 template<typename ... Args>
-const std::string stringFormat(const std::string& format, Args ... args)
+static std::string stringFormat(const std::string& format, Args ... args)
 {
     int size_s = std::snprintf( nullptr, 0, format.c_str(), args ...) + 1;
     if( size_s <= 0 ){ throw std::runtime_error( "Formatting error occured." ); }
@@ -17,7 +17,7 @@ const std::string stringFormat(const std::string& format, Args ... args)
     return std::string( buf.get(), buf.get() + size - 1 );
 }
 
-const int randomize(int low, int high)
+static int randomize(int low, int high)
 {
     std::random_device rd;
     std::mt19937 mt(rd());
@@ -26,7 +26,7 @@ const int randomize(int low, int high)
     return (int)dist(mt);
 }
 
-const bool randomize()
+static bool randomize()
 {
     std::random_device rd;
     std::mt19937 mt(rd());

@@ -14,13 +14,15 @@
 #include <QVBoxLayout>
 #include <QMessageBox>
 
+#include <iostream>
 #include <memory>
 #include <string>
 
+#include "misc.h"
 #include "shiptype.h"
 #include "gridstate.h"
 #include "point.h"
-
+#include "opponent.h"
 
 #define NUMBER_OF_GRIDS_ON_THE_BOARD 10
 
@@ -32,6 +34,7 @@ class GridWidget : public QWidget
         int numberOfSquares;
         int incrementFactor;
         int boardSize;
+        int opponentDifficulty;
 
         int smallOffset = 10;
         int bigOffset = 25;
@@ -49,6 +52,8 @@ class GridWidget : public QWidget
 
         GridState playerBoard;
         GridState opponentBoard;
+
+        Opponent opp = Opponent(NUMBER_OF_GRIDS_ON_THE_BOARD, Opponent::EASY);
 
     public:
         GridWidget() : 

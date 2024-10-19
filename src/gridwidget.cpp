@@ -1,5 +1,4 @@
 #include "gridwidget.h"
-#include "misc.h"
 
 void GridWidget::init()
 {
@@ -8,7 +7,7 @@ void GridWidget::init()
     numberOfTurnsPlayed = 0;
 
     opponentShips = addShipsToVector(true);
-    playerShips = addShipsToVector(false);    
+    playerShips = addShipsToVector(false);
 
     if(DEBUG)
     {
@@ -96,9 +95,7 @@ void GridWidget::opponentAttack()
 {
     while(true)
     {
-        int attackSquareX = randomize(0, numberOfSquares);
-        int attackSquareY = randomize(0, numberOfSquares);
-        auto pointOfAttack = Point(attackSquareX, attackSquareY);
+        Point pointOfAttack = opp.suggestNextMove();
 
         auto state = playerBoard.getGridPositionStatus(pointOfAttack);
         if(
@@ -111,10 +108,12 @@ void GridWidget::opponentAttack()
         else if(state == GridState::FREE)
         {
             playerBoard.setGridPositionStatus(pointOfAttack, GridState::MISS);
+            opp.addPreviousMove(pointOfAttack, GridState::MISS);
         }
         else if(state == GridState::SHIP)
         {
             playerBoard.setGridPositionStatus(pointOfAttack, GridState::HIT);
+            opp.addPreviousMove(pointOfAttack, GridState::HIT);
         }
 
         for(auto ship : playerShips)

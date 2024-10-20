@@ -156,7 +156,7 @@ bool GridWidget::checkIfPlayerWon()
         }
     }
 
-    winnerFound = opponentShips.size() == numberOfSunkenOpponentShips;
+    winnerFound = (int)opponentShips.size() == (int)numberOfSunkenOpponentShips;
 
     return winnerFound;
 }
@@ -175,7 +175,7 @@ bool GridWidget::checkIfOpponentWon()
         }
     }
 
-    winnerFound = playerShips.size() == numberOfSunkenPlayerShips;
+    winnerFound = (int)playerShips.size() == (int)numberOfSunkenPlayerShips;
     
     return winnerFound;
 }
@@ -210,7 +210,7 @@ bool GridWidget::isShipSunk(ShipType* ship, GridState* board)
                 << endl;
     }
 
-    isShipSunk = locations->size() == numberOfHits;
+    isShipSunk = (int)locations->size() == (int)numberOfHits;
 
     if(DEBUG)
         cout << "The ship is " << isShipSunk << endl;
@@ -297,6 +297,10 @@ ShipType* GridWidget::spawnShip(string type, int lengthOfShip, bool isOpponentSh
 
 bool placePlayerShip(ShipType* ship)
 {
+    if(ship == NULL)
+        return false;
+
+
     // Not yet implemented
     return false;
 }

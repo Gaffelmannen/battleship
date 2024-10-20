@@ -40,6 +40,18 @@ Point Opponent::suggestNextMove()
             break;
     }
 
+    if(poa.x < 0)
+        poa.x = 0;
+    
+    if(poa.x > 9)
+        poa.x = 9;
+    
+    if(poa.y < 0)
+        poa.y = 0;
+    
+    if(poa.y > 9)
+        poa.y = 9;
+
     return poa;
 }
 
@@ -47,7 +59,7 @@ void Opponent::deleteFreeSquare(Point toRemove)
 {
     int index = -1;
 
-    for(int i = 0; i < this->freeSquares.size(); i++)
+    for(int i = 0; i < (int)this->freeSquares.size(); i++)
     {
         if(
             freeSquares[i].x == toRemove.x &&
@@ -78,7 +90,7 @@ bool Opponent::isSquareFree(Point p)
 {
     bool isFree = true;
 
-    for(int i = 0; i < freeSquares.size(); i++)
+    for(int i = 0; i < (int)freeSquares.size(); i++)
     {
         if(p.x == freeSquares[i].x && p.y == freeSquares[i].y)
         {
@@ -213,19 +225,5 @@ Point Opponent::suggestNextLevel2Move()
             else
                 return attackAlongDiagonalLine();
         }
-
-        if(nextMove.x < 0)
-            nextMove.x = 0;
-        
-        if(nextMove.x > 9)
-            nextMove.x = 9;
-        
-        if(nextMove.y < 0)
-            nextMove.y = 0;
-        
-        if(nextMove.y > 9)
-            nextMove.y = 9;
-
-        return nextMove;
     }
 }

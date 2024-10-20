@@ -17,7 +17,7 @@ static std::string stringFormat(const std::string& format, Args ... args)
     return std::string( buf.get(), buf.get() + size - 1 );
 }
 
-static int randomize(int low, int high)
+static inline int randomize(int low, int high)
 {
     std::random_device rd;
     std::mt19937 mt(rd());
@@ -26,7 +26,7 @@ static int randomize(int low, int high)
     return (int)dist(mt);
 }
 
-static bool randomize()
+static inline bool randomize()
 {
     std::random_device rd;
     std::mt19937 mt(rd());

@@ -86,8 +86,8 @@ class GridWidget : public QWidget
         bool placePlayerShip(ShipType*);
         bool placeShip(ShipType*, bool);
 
-        void mouseMoveEvent(QMouseEvent *);
-        void mousePressEvent(QMouseEvent*);
+        void mouseMoveEvent(QMouseEvent *) override;
+        void mousePressEvent(QMouseEvent*) override;
         void paintEvent(QPaintEvent*) override;
         void paintBackground();
         void paintInfoBox();

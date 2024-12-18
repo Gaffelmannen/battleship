@@ -31,6 +31,7 @@ class Opponent
         void deleteFreeSquare(Point);
         void setupFreeSquares();
         bool isSquareFree(Point);
+        vector<Point> getAllHitsFromMoves();
 
         Point attackRandomFreeSquare();
         Point attackAreaAfterHit(Point lastMove);

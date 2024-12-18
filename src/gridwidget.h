@@ -53,7 +53,7 @@ class GridWidget : public QWidget
         GridState playerBoard;
         GridState opponentBoard;
 
-        Opponent opp = Opponent(NUMBER_OF_GRIDS_ON_THE_BOARD, Opponent::EASY);
+        Opponent opp = Opponent(NUMBER_OF_GRIDS_ON_THE_BOARD, Opponent::MEDIUM);
 
     public:
         GridWidget() : 

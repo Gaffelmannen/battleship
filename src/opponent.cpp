@@ -102,6 +102,23 @@ bool Opponent::isSquareFree(Point p)
     return isFree;
 }
 
+vector<Point> Opponent::getAllHitsFromMoves()
+{
+    vector<Point> hits = vector<Point>();
+
+    for(int i = 0; i < (int)this->moves.size(); i++)
+    {
+        Point p = this->moves[i];
+        GridState::State s = this->states[i];
+        if(s == GridState::HIT)
+        {
+            hits.push_back(p);
+        }
+    }
+
+    return hits;
+}
+
 Point Opponent::attackRandomFreeSquare()
 {
     cout << "Attack random free square" << endl;
@@ -123,7 +140,24 @@ Point Opponent::attackAreaAfterHit(Point lastMove)
     suggestions.push_back(Point(lastMove.x, lastMove.y-1));
     suggestions.push_back(Point(lastMove.x+1, lastMove.y-1));
 
-    return suggestions[randomize(0, suggestions.size()-1)];
+    vector<Point> verifiedMoves = vector<Point>();
+    for (size_t i = 0; i < suggestions.size(); i++) 
+    {
+        for(size_t j = 0; j < this->freeSquares.size(); j++)
+        {
+            if (suggestions[i] == this->freeSquares[j]) 
+            {
+                verifiedMoves.push_back(suggestions[i]);
+            }
+        }
+    }
+
+    if(verifiedMoves.size() <= 0)
+    {
+        return this->randomAttackInTheMiddle();
+    }
+
+    return verifiedMoves[randomize(0, verifiedMoves.size()-1)];
 }
 
 Point Opponent::randomAttackInTheMiddle()
@@ -210,13 +244,12 @@ Point Opponent::suggestNextLevel2Move()
     {
         Point nextMove;
 
-        GridState::State lastState = states[states.size()-1];
-        Point lastMove = moves[moves.size()-1];
-        cout << "PreviusMove   X=" << lastMove.x << " Y=" << lastMove.y << "   Outcome=" << lastState << "  FreeSquares=" << freeSquares.size() << endl;
+        vector<Point> hits = getAllHitsFromMoves();
 
-        if(lastState == GridState::HIT)
+        if(hits.size() > 0)
         {
-            return attackAreaAfterHit(lastMove);
+            Point lastHit = hits[size(hits)-1];
+            return attackAreaAfterHit(lastHit);
         }
         else
         {

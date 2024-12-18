@@ -1,3 +1,4 @@
+*.stash
 moc_gridwidget.cpp
 moc_predefs.h
 Makefile

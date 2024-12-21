@@ -18,6 +18,7 @@ int main(int argc, char *argv[])
 
     QIcon icon(".res/icon.ico"); 
     app.setWindowIcon(QIcon("./res/icon.png"));
+    app.setApplicationVersion(APP_VERSION);
 
     QSize s = QSize(imageWidth, imageHeight);
     GridWidget widget;

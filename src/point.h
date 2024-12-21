@@ -1,11 +1,14 @@
 #ifndef POINT_H
 #define POINT_H
 
+#include "state.h"
+
 class Point
 {
     public:
         int x;
         int y;
+        State state;
         
         Point() 
         {}

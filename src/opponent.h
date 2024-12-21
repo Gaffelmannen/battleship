@@ -25,13 +25,15 @@ class Opponent
 
         DifficultyLevel selectedLevel;
         vector<Point> moves;
-        vector<GridState::State> states;
+        vector<State> states;
         vector<Point> freeSquares;
 
         void deleteFreeSquare(Point);
-        void setupFreeSquares();
+        bool isSquareInState(Point, State);
         bool isSquareFree(Point);
+        void setupFreeSquares();
         vector<Point> getAllHitsFromMoves();
+        Point continueAttackOnPresumedShip(Point);
 
         Point attackRandomFreeSquare();
         Point attackAreaAfterHit(Point lastMove);
@@ -49,14 +51,14 @@ class Opponent
         {
             freeSquares = vector<Point>();
             moves = vector<Point>();
-            states = vector<GridState::State>();
+            states = vector<State>();
 
             setupFreeSquares();
         };
 
         void setDiagonalAttackDirection(bool);
 
-        void addPreviousMove(Point, GridState::State);
+        void addPreviousMove(Point, State);
         
         Point suggestNextMove();
 };

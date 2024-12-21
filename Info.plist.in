@@ -1,0 +1,4 @@
+<key>CFBundleShortVersionString</key>
+<string>"$$LONG_VERSION"</string>
+<key>CFBundleVersion</key>
+<string>"$$BUILD_NUMBER"</string>

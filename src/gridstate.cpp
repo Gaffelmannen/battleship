@@ -1,6 +1,6 @@
 #include "gridstate.h"
 
-GridState::State GridState::getGridPositionStatus(Point p)
+State GridState::getGridPositionStatus(Point p)
 {
     return this->grid[p.x][p.y];
 }

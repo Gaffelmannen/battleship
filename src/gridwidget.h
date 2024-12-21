@@ -64,7 +64,8 @@ class GridWidget : public QWidget
             incrementFactor = 4;
             boardSize = 450;
 
-            setWindowTitle(tr("Battleship"));
+            QString s = ("Battleship v" + stringFormat("(%s)", APP_VERSION)).data();
+            setWindowTitle(s);
             
             createActions();
 
@@ -80,7 +81,7 @@ class GridWidget : public QWidget
         bool checkIfPlayerWon();
         bool checkIfOpponentWon();
         bool isShipSunk(ShipType*, GridState*);
-        int howManyShipsHasTheShipTaken(ShipType*, GridState*);
+        int howManyHitsHasTheShipTaken(ShipType*, GridState*);
         void resetShips();
         ShipType* spawnShip(string, int, bool);
         bool placePlayerShip(ShipType*);
@@ -91,6 +92,7 @@ class GridWidget : public QWidget
         void paintEvent(QPaintEvent*) override;
         void paintBackground();
         void paintInfoBox();
+        void paintStatusBox();
         void paintGrid(int, int, GridState, QString, QColor);
 
     private slots:

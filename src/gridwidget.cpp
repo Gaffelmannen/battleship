@@ -99,21 +99,21 @@ void GridWidget::opponentAttack()
 
         auto state = playerBoard.getGridPositionStatus(pointOfAttack);
         if(
-            state == GridState::HIT ||
-            state == GridState::MISS
+            state == State::HIT ||
+            state == State::MISS
         )
         {
             continue;
         }
-        else if(state == GridState::FREE)
+        else if(state == State::FREE)
         {
-            playerBoard.setGridPositionStatus(pointOfAttack, GridState::MISS);
-            opp.addPreviousMove(pointOfAttack, GridState::MISS);
+            playerBoard.setGridPositionStatus(pointOfAttack, State::MISS);
+            opp.addPreviousMove(pointOfAttack, State::MISS);
         }
-        else if(state == GridState::SHIP)
+        else if(state == State::SHIP)
         {
-            playerBoard.setGridPositionStatus(pointOfAttack, GridState::HIT);
-            opp.addPreviousMove(pointOfAttack, GridState::HIT);
+            playerBoard.setGridPositionStatus(pointOfAttack, State::HIT);
+            opp.addPreviousMove(pointOfAttack, State::HIT);
         }
 
         for(auto ship : playerShips)
@@ -194,7 +194,7 @@ bool GridWidget::isShipSunk(ShipType* ship, GridState* board)
     {
         Point current = Point(loc.x, loc.y);
 
-        if(board->getGridPositionStatus(loc)==GridState::HIT)
+        if(board->getGridPositionStatus(loc)==State::HIT)
         {
             numberOfHits++;
         }
@@ -218,14 +218,14 @@ bool GridWidget::isShipSunk(ShipType* ship, GridState* board)
     return isShipSunk;
 }
 
-int GridWidget::howManyShipsHasTheShipTaken(ShipType* ship, GridState* board)
+int GridWidget::howManyHitsHasTheShipTaken(ShipType* ship, GridState* board)
 {
     int numberOfHitsTheShipHasTaken = 0;
 
     auto locations = ship->getLocation();
     for(auto loc : *locations)
     {
-        if(board->getGridPositionStatus(Point(loc.x, loc.y)) == GridState::HIT)
+        if(board->getGridPositionStatus(Point(loc.x, loc.y)) == State::HIT)
         {
             numberOfHitsTheShipHasTaken++;
         }
@@ -240,8 +240,8 @@ void GridWidget::resetShips()
     {
         for(int j = 0; j < numberOfSquares; j++)
         {
-            opponentBoard.setGridPositionStatus(Point(i, j), GridState::FREE);
-            playerBoard.setGridPositionStatus(Point(i, j), GridState::FREE);
+            opponentBoard.setGridPositionStatus(Point(i, j), State::FREE);
+            playerBoard.setGridPositionStatus(Point(i, j), State::FREE);
         }
     }
 }
@@ -311,14 +311,14 @@ bool GridWidget::placeShip(ShipType* ship, bool isOpponent)
     {
         if(isOpponent)
         {
-            if(this->opponentBoard.getGridPositionStatus(point) != GridState::FREE)
+            if(this->opponentBoard.getGridPositionStatus(point) != State::FREE)
             {
                 return false;
             }
         }
         else
         {
-            if(this->playerBoard.getGridPositionStatus(point) != GridState::FREE)
+            if(this->playerBoard.getGridPositionStatus(point) != State::FREE)
             {
                 return false;
             }
@@ -329,11 +329,11 @@ bool GridWidget::placeShip(ShipType* ship, bool isOpponent)
     {
         if(isOpponent)
         {
-            this->opponentBoard.setGridPositionStatus(point, GridState::SHIP);
+            this->opponentBoard.setGridPositionStatus(point, State::SHIP);
         }
         else
         {
-            this->playerBoard.setGridPositionStatus(point, GridState::SHIP);
+            this->playerBoard.setGridPositionStatus(point, State::SHIP);
         }
     }
 
@@ -503,14 +503,14 @@ void GridWidget::mousePressEvent(QMouseEvent * event)
 
     if(board=="Opponent")
     {
-        if(opponentBoard.getGridPositionStatus(gridPoint) == GridState::SHIP)
+        if(opponentBoard.getGridPositionStatus(gridPoint) == State::SHIP)
         {
-            opponentBoard.setGridPositionStatus(gridPoint, GridState::HIT);
+            opponentBoard.setGridPositionStatus(gridPoint, State::HIT);
             numberOfTurnsPlayed++;
         }
-        else if(opponentBoard.getGridPositionStatus(gridPoint) == GridState::FREE)
+        else if(opponentBoard.getGridPositionStatus(gridPoint) == State::FREE)
         {
-            opponentBoard.setGridPositionStatus(gridPoint, GridState::MISS);
+            opponentBoard.setGridPositionStatus(gridPoint, State::MISS);
             numberOfTurnsPlayed++;
         }
         else
@@ -575,6 +575,7 @@ void GridWidget::paintEvent(QPaintEvent* event)
     paintGrid(20, 50, playerBoard, "Player", Qt::blue);
     paintGrid(510, 50, opponentBoard, "Opponent", Qt::red);
     paintInfoBox();
+    paintStatusBox();
 }
 
 void GridWidget::paintBackground()
@@ -632,7 +633,7 @@ void GridWidget::paintInfoBox()
 
         string name = ship->getName();
         string status = " - is ";
-        int numberOfHits = howManyShipsHasTheShipTaken(ship, &playerBoard);
+        int numberOfHits = howManyHitsHasTheShipTaken(ship, &playerBoard);
         if(ship->sunk)
         {
             status += "sunk";
@@ -658,7 +659,7 @@ void GridWidget::paintInfoBox()
 
         string name = ship->getName();
         string status = " - is ";
-        int numberOfHits = howManyShipsHasTheShipTaken(ship, &opponentBoard);
+        int numberOfHits = howManyHitsHasTheShipTaken(ship, &opponentBoard);
         if(ship->sunk)
         {
             status += "sunk";
@@ -670,6 +671,58 @@ void GridWidget::paintInfoBox()
         QString shipInfo = ("" + name + stringFormat("(%d/%d)", numberOfHits, ship->getLocation()->size()) + status).data();
 
         painter.drawText(QPoint(baseLineX, baseLineY + 40 + 20 * i++), shipInfo);
+    }
+}
+
+void GridWidget::paintStatusBox()
+{
+    int baseLineX = 10;
+    int baseLineY = 570;
+
+    QPainter painter(this);
+
+    painter.setOpacity(0.9);
+    painter.setPen(Qt::darkGray);
+    painter.setBrush(Qt::black);
+    painter.drawRect(
+        baseLineX,
+        baseLineY,
+        1180,
+        95
+    );
+
+    QString header = "Status";
+    QFont fontHeader=painter.font();
+    fontHeader.setPointSize(28);
+    painter.setFont(fontHeader);
+    painter.setPen(Qt::darkBlue);
+    painter.drawText(QPoint(baseLineX+10, baseLineY+30), header);
+
+    QFont fontText=painter.font();
+    fontText.setPointSize(12);
+    painter.setFont(fontText);
+    painter.setPen(Qt::white);
+    QString opponentInfo = ("Number of turns played: " + stringFormat("%d", this->numberOfTurnsPlayed)).data();
+    painter.drawText(QPoint(baseLineX+10, baseLineY + 40 + 20), opponentInfo);
+
+    if(checkIfPlayerWon())
+    {
+        QFont fontText=painter.font();
+        fontText.setPointSize(12);
+        painter.setFont(fontText);
+        painter.setPen(Qt::green);
+        QString displayWinner = "You won!";
+        painter.drawText(QPoint(baseLineX+10, baseLineY + 40 + 20 * 2), displayWinner);
+    }
+
+    if(checkIfOpponentWon())
+    {
+        QFont fontText=painter.font();
+        fontText.setPointSize(12);
+        painter.setFont(fontText);
+        painter.setPen(Qt::red);
+        QString displayWinner = "You lost!";
+        painter.drawText(QPoint(baseLineX+10, baseLineY + 40 + 20 * 2), displayWinner);
     }
 }
 
@@ -768,8 +821,8 @@ void GridWidget::paintGrid(int x, int y, GridState _grid, QString _header, QColo
             if(DEBUG || header == "Player")
             {
                 if(
-                    grid.getGridPositionStatus(Point(i, j)) == GridState::SHIP ||
-                    grid.getGridPositionStatus(Point(i, j)) == GridState::HIT
+                    grid.getGridPositionStatus(Point(i, j)) == State::SHIP ||
+                    grid.getGridPositionStatus(Point(i, j)) == State::HIT
                 )
                 {
                     /* Ships */
@@ -784,7 +837,7 @@ void GridWidget::paintGrid(int x, int y, GridState _grid, QString _header, QColo
                 }
             }
 
-            if(grid.getGridPositionStatus(Point(i, j)) == GridState::HIT)
+            if(grid.getGridPositionStatus(Point(i, j)) == State::HIT)
             {
                 /* Circles - Lines */
                 painter.setBrush(Qt::white);
@@ -796,7 +849,7 @@ void GridWidget::paintGrid(int x, int y, GridState _grid, QString _header, QColo
                 );
             }
 
-            if(grid.getGridPositionStatus(Point(i, j)) == GridState::MISS)
+            if(grid.getGridPositionStatus(Point(i, j)) == State::MISS)
             {
                 /* Circles - Lines */
                 painter.setBrush(Qt::red);

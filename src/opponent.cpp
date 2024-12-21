@@ -15,8 +15,9 @@ void Opponent::setDiagonalAttackDirection(bool startTopLeft)
     }
 }
 
-void Opponent::addPreviousMove(Point p, GridState::State s)
+void Opponent::addPreviousMove(Point p, State s)
 {
+    p.state = s;
     moves.push_back(p);
     states.push_back(s);
     deleteFreeSquare(p);
@@ -86,7 +87,7 @@ void Opponent::setupFreeSquares()
     }
 }
 
-bool Opponent::isSquareFree(Point p)
+bool Opponent::isSquareInState(Point p, State s)
 {
     bool isFree = true;
 
@@ -95,11 +96,17 @@ bool Opponent::isSquareFree(Point p)
         if(p.x == freeSquares[i].x && p.y == freeSquares[i].y)
         {
             isFree = false;
+            p.state = s;
             break;
         }
     }
 
     return isFree;
+}
+
+bool Opponent::isSquareFree(Point p)
+{
+    return isSquareInState(p, State::FREE);
 }
 
 vector<Point> Opponent::getAllHitsFromMoves()
@@ -109,14 +116,37 @@ vector<Point> Opponent::getAllHitsFromMoves()
     for(int i = 0; i < (int)this->moves.size(); i++)
     {
         Point p = this->moves[i];
-        GridState::State s = this->states[i];
-        if(s == GridState::HIT)
+        State s = this->states[i];
+        if(s == State::HIT)
         {
             hits.push_back(p);
         }
     }
 
     return hits;
+}
+
+Point Opponent::continueAttackOnPresumedShip(Point p)
+{
+    Point nextPointToAttack;
+
+    // Vertical check
+    Point q = Point(p.x+1, p.y);
+    while(q.state == HIT)
+        q.x++;
+
+    if(q.x < boardSize-1)
+        nextPointToAttack = q;
+
+    // Horisontal check
+    q = Point(p.x, p.y+1);
+    while(q.state == HIT)
+        q.y++;
+
+    if(q.y < boardSize-1)
+        nextPointToAttack = q;
+    
+    return nextPointToAttack;
 }
 
 Point Opponent::attackRandomFreeSquare()
@@ -242,13 +272,12 @@ Point Opponent::suggestNextLevel2Move()
     }
     else
     {
-        Point nextMove;
-
         vector<Point> hits = getAllHitsFromMoves();
 
         if(hits.size() > 0)
         {
             Point lastHit = hits[size(hits)-1];
+            //return continueAttackOnPresumedShip(lastHit);
             return attackAreaAfterHit(lastHit);
         }
         else

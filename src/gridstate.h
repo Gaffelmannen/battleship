@@ -10,14 +10,6 @@ using namespace std;
 
 class GridState 
 {
-    public:
-        enum State {
-            FREE,
-            SHIP,
-            HIT,
-            MISS
-        };
-
     private:
         int size;
         vector<vector<State>> grid;

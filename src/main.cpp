@@ -31,6 +31,11 @@ int main(int argc, char *argv[])
     widget.setMaximumSize(s);
     widget.show();
 
+    QFont font = QFont();
+    font.setStyleStrategy(QFont::PreferAntialias);
+    app.setFont(font);
+
+
     return app.exec();
 }
 

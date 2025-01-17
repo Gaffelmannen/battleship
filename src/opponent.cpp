@@ -25,21 +25,7 @@ void Opponent::addPreviousMove(Point p, State s)
 
 Point Opponent::suggestNextMove()
 {
-    Point poa = Point(-1, -1);
-    switch (this->selectedLevel)
-    {
-        case SIMPLE:
-        case EASY:
-            poa = suggestNextLevel1Move();
-            break;
-
-        case MEDIUM:
-            poa = suggestNextLevel2Move();
-            break;
-
-        default:
-            break;
-    }
+    Point poa = suggestNextMove(selectedLevel);
 
     if(poa.x < 0)
         poa.x = 0;
@@ -87,16 +73,15 @@ void Opponent::setupFreeSquares()
     }
 }
 
-bool Opponent::isSquareInState(Point p, State s)
+bool Opponent::isSquareFree(Point p)
 {
-    bool isFree = true;
+    bool isFree = false;
 
     for(int i = 0; i < (int)freeSquares.size(); i++)
     {
         if(p.x == freeSquares[i].x && p.y == freeSquares[i].y)
         {
-            isFree = false;
-            p.state = s;
+            isFree = true;
             break;
         }
     }
@@ -104,9 +89,62 @@ bool Opponent::isSquareInState(Point p, State s)
     return isFree;
 }
 
-bool Opponent::isSquareFree(Point p)
+bool Opponent::wasLastAttackAHit()
 {
-    return isSquareInState(p, State::FREE);
+    bool result = false;
+
+    if(moves.size() <= 0)
+        result = false;
+    else if(states[states.size()-1] == State::HIT)
+        result = true;
+    
+    return result;
+}
+
+bool Opponent::wasLastTwoAttacksHorisontal()
+{
+    bool result = false;
+
+    if(moves.size() < 2)
+        result = false;
+    
+    if(moves[moves.size()-2].x == moves[moves.size()-1].x)
+        result = true;
+
+    return result;
+}
+
+bool Opponent::wasLastThreeAttacksHorisontal()
+{
+    bool result = false;
+
+    if(moves.size() < 3)
+        result = false;
+    
+    if( moves[moves.size()-3].x ==
+        moves[moves.size()-2].x == 
+        moves[moves.size()-1].x)
+        result = true;
+
+    return result;
+}
+
+bool Opponent::isSquareHit(Point p)
+{
+    bool isHit = false;
+
+    for(int i = 0; i < (int)moves.size(); i++)
+    {
+        if( p.x == moves[i].x && 
+            p.y == moves[i].y &&
+            p.state == State::HIT)
+        {
+            isHit = true;
+            break;
+        }
+    }
+
+    return isHit;
 }
 
 vector<Point> Opponent::getAllHitsFromMoves()
@@ -126,26 +164,37 @@ vector<Point> Opponent::getAllHitsFromMoves()
     return hits;
 }
 
-Point Opponent::continueAttackOnPresumedShip(Point p)
+Point Opponent::horisontalAttackOnShip(Point p)
 {
-    Point nextPointToAttack;
+    Point nextPointToAttack = randomAttackInTheMiddle();
 
-    // Vertical check
-    Point q = Point(p.x+1, p.y);
-    while(q.state == HIT)
-        q.x++;
-
-    if(q.x < boardSize-1)
-        nextPointToAttack = q;
-
-    // Horisontal check
-    q = Point(p.x, p.y+1);
-    while(q.state == HIT)
-        q.y++;
-
-    if(q.y < boardSize-1)
-        nextPointToAttack = q;
+    for(int i = p.x; i < boardSize; i++)
+    {
+        Point temp = Point(i, p.y);
+        if(isSquareFree(temp))
+        {
+            nextPointToAttack = temp;
+            break;
+        }
+    }
     
+    return nextPointToAttack;
+}
+
+Point Opponent::verticalAttackOnShip(Point p)
+{
+    Point nextPointToAttack = randomAttackInTheMiddle();
+
+    for(int i = p.y; i < boardSize; i++)
+    {
+        Point temp = Point(p.x, i);
+        if(isSquareFree(temp))
+        {
+            nextPointToAttack = temp;
+            break;
+        }
+    }
+
     return nextPointToAttack;
 }
 
@@ -252,40 +301,96 @@ Point Opponent::attackAlongDiagonalLine()
     return p;
 }
 
-Point Opponent::suggestNextLevel1Move()
+Point Opponent::suggestNextMove(DifficultyLevel level)
 {
-    Point pointOfAttack;
-
-    int numberOfSquares = this->boardSize;
-    int attackSquareX = randomize(0, numberOfSquares);
-    int attackSquareY = randomize(0, numberOfSquares);
-    pointOfAttack = Point(attackSquareX, attackSquareY);
-
-    return pointOfAttack;
-}
-
-Point Opponent::suggestNextLevel2Move()
-{
-    if(moves.size() <= 0)
+    switch(level)
     {
-        return randomAttackInTheMiddle();
-    }
-    else
-    {
-        vector<Point> hits = getAllHitsFromMoves();
-
-        if(hits.size() > 0)
+        default:
+        case DifficultyLevel::EASY:
         {
-            Point lastHit = hits[size(hits)-1];
-            //return continueAttackOnPresumedShip(lastHit);
-            return attackAreaAfterHit(lastHit);
+            Point pointOfAttack;
+
+            int numberOfSquares = this->boardSize;
+            int attackSquareX = randomize(0, numberOfSquares);
+            int attackSquareY = randomize(0, numberOfSquares);
+            pointOfAttack = Point(attackSquareX, attackSquareY);
+
+            return pointOfAttack;
         }
-        else
+
+        case DifficultyLevel::MEDIUM:
         {
-            if(randomize())
+            if(moves.size() <= 0)
+            {
                 return randomAttackInTheMiddle();
+            }
             else
-                return attackAlongDiagonalLine();
+            {
+                vector<Point> hits = getAllHitsFromMoves();
+
+                if(hits.size() > 0)
+                {
+                    Point lastHit = hits[size(hits)-1];
+                    return attackAreaAfterHit(lastHit);
+                }
+                else
+                {
+                    if(randomize())
+                        return randomAttackInTheMiddle();
+                    else
+                        return attackAlongDiagonalLine();
+                }
+            }
+        }
+
+        case DifficultyLevel::HARD:
+        {
+            if(moves.size() <= 0)
+            {
+                return randomAttackInTheMiddle();
+            }
+            else
+            {
+                vector<Point> hits = getAllHitsFromMoves();
+
+                if(wasLastTwoAttacksHorisontal())
+                {
+                    return horisontalAttackOnShip(hits[hits.size()-1]);
+                }
+
+                for(Point hit : hits)
+                {
+                    Point poa = randomAttackInTheMiddle();
+                    
+                    if(
+                        wasLastTwoAttacksHorisontal() ||
+                        (
+                            !wasLastTwoAttacksHorisontal() &&
+                            !wasLastAttackAHit()
+                        )
+                    )
+                    {
+                        poa = horisontalAttackOnShip(hit);
+                    }
+                    else if(
+                        !wasLastTwoAttacksHorisontal() ||
+                        (
+                            wasLastTwoAttacksHorisontal() &&
+                            !wasLastAttackAHit()
+                        )
+                    )
+                    {
+                        poa = verticalAttackOnShip(hit);
+                    }
+
+                    return poa;
+                }
+                
+                if(randomize())
+                    return randomAttackInTheMiddle();
+                else
+                    return attackAlongDiagonalLine();
+            }
         }
     }
 }

@@ -19,7 +19,8 @@ class Point
         )
         :
             x(_x),
-            y(_y)
+            y(_y),
+            state(State::FREE)
         {}
         
         Point operator+(Point const &obj)

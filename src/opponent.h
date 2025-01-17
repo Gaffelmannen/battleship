@@ -21,7 +21,7 @@ class Opponent
         int boardSize;
         
         bool diagonalLineAttackStartTopleft = true;
-        int diagonalLinePosition=0;
+        int diagonalLinePosition = 0;
 
         DifficultyLevel selectedLevel;
         vector<Point> moves;
@@ -29,19 +29,22 @@ class Opponent
         vector<Point> freeSquares;
 
         void deleteFreeSquare(Point);
-        bool isSquareInState(Point, State);
         bool isSquareFree(Point);
+        bool isSquareHit(Point);
+        bool wasLastAttackAHit();
+        bool wasLastTwoAttacksHorisontal();
+        bool wasLastThreeAttacksHorisontal();
+
+
         void setupFreeSquares();
         vector<Point> getAllHitsFromMoves();
-        Point continueAttackOnPresumedShip(Point);
 
         Point attackRandomFreeSquare();
         Point attackAreaAfterHit(Point lastMove);
         Point randomAttackInTheMiddle();
         Point attackAlongDiagonalLine();
-
-        Point suggestNextLevel1Move();
-        Point suggestNextLevel2Move();
+        Point horisontalAttackOnShip(Point);
+        Point verticalAttackOnShip(Point);
     
     public:
         Opponent(int _boardSize, DifficultyLevel _selectedLevel)
@@ -61,6 +64,7 @@ class Opponent
         void addPreviousMove(Point, State);
         
         Point suggestNextMove();
+        Point suggestNextMove(DifficultyLevel);
 };
 
 #endif

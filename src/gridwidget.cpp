@@ -107,11 +107,13 @@ void GridWidget::opponentAttack()
         }
         else if(state == State::FREE)
         {
+            pointOfAttack.state = State::MISS;
             playerBoard.setGridPositionStatus(pointOfAttack, State::MISS);
             opp.addPreviousMove(pointOfAttack, State::MISS);
         }
         else if(state == State::SHIP)
         {
+            pointOfAttack.state = State::HIT;
             playerBoard.setGridPositionStatus(pointOfAttack, State::HIT);
             opp.addPreviousMove(pointOfAttack, State::HIT);
         }
